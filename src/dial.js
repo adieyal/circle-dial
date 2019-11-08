@@ -51,11 +51,13 @@ export function Dial() {
 
         var baseX = coords.middle, baseY = (radius() - radiusScale(d[0])) + cy();
         graphLine.moveTo(baseX, baseY)
+    /*
         container.append("circle")
             .attr("r", 10)
             .attr("cx", baseX)
             .attr("cy", baseY)
             .style("fill", "red")
+*/
 
         for (var idx in d) {
             if (idx > 0) {
@@ -63,17 +65,21 @@ export function Dial() {
                 var baseX = (radius() - radiusScale(d[idx])) * Math.sin(angleAccum) + cx();
                 var baseY = (radius() - radiusScale(d[idx])) * Math.cos(angleAccum) + cy();
 
-                graphLine.lineTo(baseX, baseY);
+       //         graphLine.lineTo(baseX, baseY);
+                graphLine.quadraticCurveTo(coords.middle, coords.middle, baseX, baseY);
 
+/*
                 container.append("circle")
                     .attr("r", 10)
                     .attr("cx", baseX)
                     .attr("cy", baseY)
                     .style("fill", "red")
+*/
             }
         }
 
-        graphLine.lineTo(coords.middle, coords.bottom);
+        //graphLine.lineTo(coords.middle, coords.bottom);
+        graphLine.quadraticCurveTo(coords.middle, coords.middle, coords.middle, coords.bottom);
         graphLine.closePath();
         container.append("path")
             .attr("d", graphLine.toString())
