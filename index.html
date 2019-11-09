@@ -1,9 +1,21 @@
 <!doctype html>
 <html>
     <head>
-        <title>Getting STarted</title>
+        <title>Dial viz</title>
+        <style>
+            p {
+                width: 50%;
+                font-family: Helvetica;
+                line-height: 1.5em;
+                font-size: 1.5em;
+                margin-left: 2em;
+            }
+        </style>
     </head>
     <body>
+        <p>
+        This is an experimental data visualisation that represents barcharts inside of a dial which can spin. It is a work in progress. The red circles represent the data points. The closer to the centre, the higher the value. The lines in between them are meaningless and are created using a quadratic bezier curve. The curves will look different when the visualisation is complete.
+        </p>
         <div id="viz"></div>
         <script src="dist/main.js"></script>
     </body>

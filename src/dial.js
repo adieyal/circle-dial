@@ -41,13 +41,13 @@ export function Dial() {
         let baseX = coords.middle,
             baseY = (radius() - radiusScale(d[0])) + cy();
         graphLine.moveTo(baseX, baseY)
-/*
+
         container.append("circle")
             .attr("r", 10)
             .attr("cx", baseX)
             .attr("cy", baseY)
             .style("fill", "red")
-*/
+
 
         for (let idx in d) {
             if (idx > 0) {
@@ -60,13 +60,13 @@ export function Dial() {
        //         graphLine.lineTo(baseX, baseY);
                 graphLine.quadraticCurveTo(coords.middle, coords.middle, baseX, baseY);
 
-/*
+
                 container.append("circle")
                     .attr("r", 10)
                     .attr("cx", baseX)
                     .attr("cy", baseY)
                     .style("fill", "red")
-*/
+
             }
         }
 
@@ -88,7 +88,7 @@ export function Dial() {
                 .attr("cx", cx)
                 .attr("cy", cy)
                 .style("stroke", "black")
-                .style("fill", "pink")
+                .style("fill", "#45419a")
 
             let coords = {
                 bottom: cy() + radius(),
