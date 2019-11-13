@@ -27,39 +27,54 @@ export function Dial() {
 
     const createRadiusScale = data =>
         d3.scaleLinear()
-            .domain([d3.min(data), d3.max(data) * 1.5])
+            .domain([d3.min(data) * 0.75, d3.max(data) * 1.25])
             .range([0, radius()])
 
 
     function drawData(container, d, coords) {
         let graphLine = d3.path();
+        let cBaseX, cBaseY;
+        let oldBaseX, oldBaseY;
+
         let shiftAngle = (360 / d.length);
         let shiftAngleRadians = deg2rad(shiftAngle);
         let angleAccum = 0;
         radiusScale = createRadiusScale(d);
 
+        console.log(radiusScale(d[0]))
         let baseX = coords.middle,
             baseY = (radius() - radiusScale(d[0])) + cy();
         graphLine.moveTo(baseX, baseY)
+
+        let graphPath = container.append("path")
 
         container.append("circle")
             .attr("r", 10)
             .attr("cx", baseX)
             .attr("cy", baseY)
-            .style("fill", "red")
-
+            .style("fill", "blue")
 
         for (let idx in d) {
             if (idx > 0) {
+                let middleAngle = angleAccum + shiftAngleRadians / 2;
                 angleAccum += shiftAngleRadians;
-                let oldBaseX = baseX;
-                let oldBaseY = baseY;
-                let baseX = (radius() - radiusScale(d[idx])) * Math.sin(angleAccum) + cx();
-                let baseY = (radius() - radiusScale(d[idx])) * Math.cos(angleAccum) + cy();
+                
+                oldBaseX = baseX;
+                oldBaseY = baseY;
+                baseX = (radius() - radiusScale(d[idx])) * Math.sin(angleAccum) + cx();
+                baseY = (radius() - radiusScale(d[idx])) * Math.cos(angleAccum) + cy();
+                cBaseX = radius() * Math.sin(middleAngle) + cx();
+                cBaseY = radius() * Math.cos(middleAngle) + cy();
 
-       //         graphLine.lineTo(baseX, baseY);
-                graphLine.quadraticCurveTo(coords.middle, coords.middle, baseX, baseY);
+                //graphLine.lineTo(baseX, baseY);
 
+                graphLine.quadraticCurveTo(cBaseX, cBaseY , baseX, baseY);
+
+                container.append("circle")
+                    .attr("r", 10)
+                    .attr("cx", cBaseX)
+                    .attr("cy", cBaseY)
+                    .style("fill", "green")
 
                 container.append("circle")
                     .attr("r", 10)
@@ -70,10 +85,15 @@ export function Dial() {
             }
         }
 
-        //graphLine.lineTo(coords.middle, coords.bottom);
-        graphLine.quadraticCurveTo(coords.middle, coords.middle, coords.middle, coords.bottom);
+        let middleAngle = angleAccum + shiftAngleRadians / 2;
+        angleAccum += shiftAngleRadians;
+        cBaseX = radius() * Math.sin(middleAngle) + cx();
+        cBaseY = radius() * Math.cos(middleAngle) + cy();
+        baseY = (radius() - radiusScale(d[0])) + cy();
+        //graphLine.lineTo(coords.middle, baseY);
+        graphLine.quadraticCurveTo(cBaseX, cBaseY, coords.middle, baseY);
         graphLine.closePath();
-        container.append("path")
+        graphPath
             .attr("d", graphLine.toString())
             .style("stroke", "black")
             .style("fill", "white")
@@ -104,18 +124,11 @@ export function Dial() {
 
             let drag = d3.drag()
                 .on("start", function() {
-                    let e = d3.getEvent();
-                    if (this._event == undefined)
+                    if (this._event == undefined) {
                         this._startAngle = 0;
-                    this._event = e;
-                    console.log("start")
-                })
-                .on("end", function(el) {
-                    console.log("end")
-                    this._startAngle = 0;
-                    this._event = undefined;
-                    d3.select(this).style("touch-action", "auto");
-                    d3.select(this).style("touch-action", "manipulation");
+                        let e = d3.getEvent();
+                        this._event = e;
+                    }
                 })
                 .on("drag", function(el) {
                     let g = d3.select(this);
@@ -140,10 +153,12 @@ export function Dial() {
                     }
                     console.log(dtheta);
                     this._startAngle += dtheta ;
-                    if (this._startAngle < 0)
-                        this._startAngle += 0;
-
-
+                    
+                    if (this._startAngle > 360) {
+                        this._startAngle -= 360;
+                    } else if (this._startAngle < -360) {
+                        this._startAngle += 360;
+                    }
                     let transform = d3.transform()
                         .translate([cx(), cy()])
                         .rotate(this._startAngle)
